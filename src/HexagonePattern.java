@@ -4,8 +4,8 @@ import javax.swing.*;
 
 public class HexagonePattern extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final int ROWS = 7;
-    private static final int COLUMNS = 7;
+    private static final int ROWS = 10;
+    private static final int COLUMNS = 10;
     private HexagonButton[][] hexButton = new HexagonButton[ROWS][COLUMNS];
 
 
@@ -26,7 +26,7 @@ public class HexagonePattern extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         HexagonButton clickedButton = (HexagonButton) e.getSource();
                         System.out.println("Button clicked: [" + clickedButton.getRow() + "][" + clickedButton.getCol() + "]");
-                        
+                        clickedButton.setBackground(Color.red);
                     }
                 });
                 add(hexButton[row][col]);
