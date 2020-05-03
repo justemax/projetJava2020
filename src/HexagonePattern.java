@@ -30,15 +30,20 @@ public class HexagonePattern extends JPanel {
                     }
                 });
                 add(hexButton[row][col]);
-                hexButton[row][col].setBounds(offsetY, offsetX, 105, 95);
+                hexButton[row][col].setBounds(offsetY, offsetX, 100, 100);
                 offsetX += 87;
+                if(row%2 == 1 && col == 0){
+                	hexButton[row][col].setVisible(false);
+                }
             }
             if(row%2 == 0) {
                 offsetX = -52;
             } else {
                 offsetX = -10;
             }
+            
             offsetY += 76;
+            
         }
     }
 }

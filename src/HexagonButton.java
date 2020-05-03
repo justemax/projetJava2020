@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 
 import javax.swing.*;
 
@@ -7,55 +6,67 @@ import javax.swing.*;
 
 class HexagonButton extends JButton {
         private static final long serialVersionUID = 1L;
-        private static final int SIDES = 6;
-        private static final int SIDE_LENGTH = 50;
-        public static final int LENGTH = 95;
-        public static final int WIDTH = 105;
         private int row = 0;
         private int col = 0;
+        private int n=6;
+        private int x[]= new int[n];
+        private int y[]= new int[n];
+        private double angle = 2*Math.PI/n;
 
         public HexagonButton(int row, int col) {
-            setContentAreaFilled(false);
-            setFocusPainted(true);
-            setBorderPainted(false);
-            setPreferredSize(new Dimension(WIDTH, LENGTH));
+        	Dimension size = getPreferredSize();
+        	size.width = size.height = Math.max(size.width, size.height);
+        	setPreferredSize(size);
+        	setContentAreaFilled(false);
             this.row = row;
             this.col = col;
-            //this.setBackground(Color.blue);
+            this.setBackground(Color.blue);
         }
 
-        // Dessine mon hexagone
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Polygon hex = new Polygon();
-            for (int i = 0; i < SIDES; i++) {
-                hex.addPoint((int) (50 + SIDE_LENGTH * Math.cos(i * 2 * Math.PI / SIDES)), //calculation for side
-                (int) (50 + SIDE_LENGTH * Math.sin(i * 2 * Math.PI / SIDES)));   //calculation for side
-            }     
-            g.setColor(Color.blue);
-            g.drawPolygon(hex);
-            
-        }
         
-        
-        
-        public void paintBorder(Graphics g) {
-            super.paintComponent(g);
-            Polygon hex = new Polygon();
-            for (int i = 0; i < SIDES; i++) {
-                hex.addPoint((int) (50 + SIDE_LENGTH * Math.cos(i * 2 * Math.PI / SIDES)), //calculation for side
-                (int) (50 + SIDE_LENGTH * Math.sin(i * 2 * Math.PI / SIDES)));   //calculation for side
-            }       
-            g.drawPolygon(hex);
-            
-        }
-        Shape shape;
-        public boolean contains(int x, int y) {
-            if (shape == null || !shape.getBounds().equals(getBounds())) {
-                 shape = new Ellipse2D.Float(0, 0, getWidth(), getHeight());
+        protected void paintComponent(Graphics g) {
+            if (getModel().isArmed()) {
+                g.setColor(Color.lightGray);
+            } else {
+                g.setColor(getBackground());
             }
-            return shape.contains(x, y);
-       }
+            int x0 = getSize().width/2;
+            int y0 = getSize().height/2;
+            for(int i=0; i<n; i++) {
+                double v = i*angle;
+                x[i] = x0 + (int)Math.round((getWidth()/2)*Math.cos(v));
+                y[i] = y0 + (int)Math.round((getHeight()/2)*Math.sin(v));
+            }
+            g.fillPolygon(x, y, n);
+            super.paintComponent(g);
+        }
+         
+        protected void paintBorder(Graphics g) {
+            g.setColor(getForeground());
+            int x0 = getSize().width/2;
+            int y0 = getSize().height/2;
+            for(int i=0; i<n; i++) {
+                double v = i*angle;
+                x[i] = x0 + (int)Math.round((getWidth()/2)*Math.cos(v));
+                y[i] = y0 + (int)Math.round((getHeight()/2)*Math.sin(v));
+            }
+            g.drawPolygon(x, y, n);
+        }
+        
+        Polygon polygon;
+        public boolean contains(int x1, int y1) {
+            if (polygon == null || !polygon.getBounds().equals(getBounds())) {
+                int x0 = getSize().width/2;
+                int y0 = getSize().height/2;
+                for(int i=0; i<n; i++) {
+                    double v = i*angle;
+                    x[i] = x0 + (int)Math.round((getWidth()/2)*Math.cos(v));
+                    y[i] = y0 + (int)Math.round((getHeight()/2)*Math.sin(v));
+                }
+                polygon = new Polygon(x,y,n);
+            }
+            return polygon.contains(x1, y1);
+        }
         
         public int getRow() {
             return row;
