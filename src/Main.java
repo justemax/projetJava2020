@@ -12,9 +12,10 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocation(new Point(700, 300));
         frame.add(hexPattern);
-        frame.setSize(900, 1200);
+        frame.setSize(600, 600);
         frame.setResizable(false);
         frame.setVisible(true);
+        
     }
 }
 
