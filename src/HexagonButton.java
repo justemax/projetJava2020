@@ -12,8 +12,13 @@ class HexagonButton extends JButton {
         private int x[]= new int[n];
         private int y[]= new int[n];
         private double angle = 2*Math.PI/n;
+        
+        private String terrain = "Mer";
 
-        public HexagonButton(int row, int col) {
+        
+
+
+		public HexagonButton(int row, int col) {
         	Dimension size = getPreferredSize();
         	size.width = size.height = Math.max(size.width, size.height);
         	setPreferredSize(size);
@@ -21,6 +26,8 @@ class HexagonButton extends JButton {
             this.row = row;
             this.col = col;
             this.setBackground(Color.blue);
+            this.setText(String.valueOf(col)+ "." + String.valueOf(row));
+            this.setIcon(new ImageIcon("image/mer.png"));
         }
 
         
@@ -75,4 +82,13 @@ class HexagonButton extends JButton {
         public int getCol() {
             return col;
         }
+        
+        public String getTerrain() {
+			return terrain;
+		}
+
+
+		public void setTerrain(String terrain) {
+			terrain = terrain;
+		}
 }

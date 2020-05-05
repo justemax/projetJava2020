@@ -14,7 +14,10 @@ public class HexagonePattern extends JPanel implements ActionListener{
     private int nbClic = 0;
     private HexagonButton b1,b2;
     
+    private ListeTerrain ter = new ListeTerrain();
+    private int terRestant = 39;
     
+    private int placement = 5;
     
     public HexagonePattern() {
         setLayout(null);
@@ -36,13 +39,47 @@ public class HexagonePattern extends JPanel implements ActionListener{
                         
                     }
                 });
-                if((row == 1) && (col == 2) || (row == 0) && (col == 11) || (row == 12) && (col == 11) || (row == 12) && (col == 2)){
+                
+                
+                // Là où le placement des élement se fait aléatoirement
+                if((col >= 3 && col <= 10) && (row >= 3 && row <= 9) && !(row == 3 && col == 3) && !(row == 9 && col == 3) && !(row == 4 && col == 3) && !(row == 8 && col == 3) && !(row == 3 && col == 4) && !(row == 9 && col == 4) && !(row == 4 && col == 9) && !(row == 6 && col == 10) && !(row == 4 && col == 10) && !(row == 3 && col == 9) && !(row == 3 && col == 10) && !(row == 8 && col == 10) && !(row == 8 && col == 9) && !(row == 9 && col == 10) && !(row == 9 && col == 9)){
+                	int alea = 0 + (int)(Math.random() * ((terRestant - 0) + 1));
+                	String terCourant = ter.getTerrain(alea);
+                	System.out.println(" " + alea);
+                	System.out.print(terCourant);
+                	if (terRestant > 0){
+                		ter.dropTerrain(alea);
+                	}
+                	
+                	System.out.println("Il reste: " + terRestant + "terrains");
+                	
+                	if (terCourant == "Foret"){
+                		hexButton[row][col].setBackground(Color.green);
+                		hexButton[row][col].setTerrain("Foret");
+                		hexButton[row][col].setIcon(new ImageIcon("image/foret.png"));
+                	}else if(terCourant == "Plage"){
+                		hexButton[row][col].setBackground(Color.yellow);
+                		hexButton[row][col].setTerrain("Plage");
+                		hexButton[row][col].setIcon(new ImageIcon("image/plage.png"));
+                	}else if(terCourant == "Montagne"){
+                		hexButton[row][col].setBackground(Color.gray);
+                		hexButton[row][col].setTerrain("Montagne");
+                		hexButton[row][col].setIcon(new ImageIcon("image/montagne.png"));
+                	}
+                	
+                	terRestant --;
+                	
+                	
+                }
+                /* Placement des serpent */
+                if((row == 1) && (col == 2) || (row == 0) && (col == 11) || (row == 12) && (col == 11) || (row == 12) && (col == 2) || (row == 6) && (col == 6)){
                 	
 					
 					hexButton[row][col].setIcon(new ImageIcon("image/serpent.png"));
 					
                 	System.out.println("Passe la");
                 }
+                
                 add(hexButton[row][col]);
                 hexButton[row][col].setBounds(offsetY, offsetX, 50, 50);
                 offsetX += 43;
@@ -68,10 +105,20 @@ public class HexagonePattern extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		System.out.println("Selectionnez le premier bouton");
 		
+		// Premier systeme de placement de pion
+		System.out.println("Selectionnez le premier bouton a placer");
 		
-		/* Selection entre deux case adjacentes */
+		if(placement > 0){
+			b1 = (HexagonButton) arg0.getSource();
+			b1.setIcon(new ImageIcon("image/pion.png"));
+			placement --;
+		}else{
+			System.out.println("Tout est place");
+		}
+		
+		/*
+		 Selection entre deux case adjacentes 
 		if(nbClic == 0){
 			b1 = (HexagonButton) arg0.getSource();
 			System.out.println("Col 1= " + b1.getCol());
@@ -99,6 +146,8 @@ public class HexagonePattern extends JPanel implements ActionListener{
 			b1.setBackground(Color.blue);
 			nbClic = 0;
 		}
+		*/
+		
 		
 	}
 }
