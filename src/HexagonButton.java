@@ -13,6 +13,8 @@ class HexagonButton extends JButton {
         private int y[]= new int[n];
         private double angle = 2*Math.PI/n;
         
+        private boolean occupe = false;
+        private Pion pionPresent = null;
         private String terrain = "Mer";
 
         
@@ -75,7 +77,17 @@ class HexagonButton extends JButton {
             return polygon.contains(x1, y1);
         }
         
-        public int getRow() {
+        public Pion getPionPresent() {
+			return pionPresent;
+		}
+
+
+		public void setPionPresent(Pion pionPresent) {
+			this.pionPresent = pionPresent;
+		}
+
+
+		public int getRow() {
             return row;
         }
 
@@ -88,7 +100,15 @@ class HexagonButton extends JButton {
 		}
 
 
+        public void setOccupe(boolean b){
+        	this.occupe = b;
+        }
+        
+        public boolean getOccupe(){
+        	return occupe;
+        }
+        
 		public void setTerrain(String terrain) {
-			terrain = terrain;
+			this.terrain = terrain;
 		}
 }

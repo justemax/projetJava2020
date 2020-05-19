@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,10 +18,20 @@ public class HexagonePattern extends JPanel implements ActionListener{
     private ListeTerrain ter = new ListeTerrain();
     private int terRestant = 39;
     
+    //Phase de placement pions
     private int placement = 5;
+    private boolean fin = false;
+    
+    private ArrayList<String> listCoul = new ArrayList<String>();
+    
+    
+    
+    private String coulCour;
     
     public HexagonePattern() {
-        setLayout(null);
+        setLayout(null); 
+        remplissageArrayCoul();
+        coulCour = listCoul.get(0);
         initGUI();
     }
 
@@ -42,7 +53,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
                 
                 
                 // Là où le placement des élement se fait aléatoirement
-                if((col >= 3 && col <= 10) && (row >= 3 && row <= 9) && !(row == 3 && col == 3) && !(row == 9 && col == 3) && !(row == 4 && col == 3) && !(row == 8 && col == 3) && !(row == 3 && col == 4) && !(row == 9 && col == 4) && !(row == 4 && col == 9) && !(row == 6 && col == 10) && !(row == 4 && col == 10) && !(row == 3 && col == 9) && !(row == 3 && col == 10) && !(row == 8 && col == 10) && !(row == 8 && col == 9) && !(row == 9 && col == 10) && !(row == 9 && col == 9)){
+                if(zoneMilieu(row, col)){
                 	int alea = 0 + (int)(Math.random() * ((terRestant - 0) + 1));
                 	String terCourant = ter.getTerrain(alea);
                 	System.out.println(" " + alea);
@@ -106,16 +117,43 @@ public class HexagonePattern extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		// Premier systeme de placement de pion
-		System.out.println("Selectionnez le premier bouton a placer");
+		// V2 systeme de placement de pion
 		
-		if(placement > 0){
-			b1 = (HexagonButton) arg0.getSource();
-			b1.setIcon(new ImageIcon("image/pion.png"));
-			placement --;
-		}else{
-			System.out.println("Tout est place");
+		b1 = (HexagonButton) arg0.getSource();
+		if(!fin){
+			if(placement > 0){
+				System.out.println("Placement des pions" + coulCour);
+				if( zoneMilieu(b1.getRow(), b1.getCol())){
+					if(b1.getOccupe()){
+						System.out.println("Deja un pion");
+					}else{
+						Pion p = new Pion(coulCour, 1, b1.getCol(), b1.getRow());
+						b1.setPionPresent(p);
+						b1.setIcon(new ImageIcon("image/pion" + coulCour + ".png"));
+						b1.setOccupe(true);
+						placement --;
+						System.out.println("reste " + placement);
+					}
+					
+				}
+				else{
+					System.out.println("Pas bonne zone");
+				}
+			}else{
+				System.out.println("Tout est placé pour" + coulCour);
+				if(listCoul.indexOf(coulCour) < listCoul.size() - 1){
+					coulCour = listCoul.get(listCoul.indexOf(coulCour) + 1);
+					placement = 5;
+				}else{
+					System.out.println("Tout est placé la partie commence");
+					fin = true;
+				}
+					
+				
+			}
 		}
+		
+		System.out.println("Partie en cour");
 		
 		/*
 		 Selection entre deux case adjacentes 
@@ -149,5 +187,22 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		*/
 		
 		
+	}
+	
+	
+	private void remplissageArrayCoul(){
+		listCoul.add("Bleu");
+		listCoul.add("Jaune");
+		listCoul.add("Vert");
+		listCoul.add("Rouge");
+		
+	}
+	
+	public boolean zoneMilieu(int row, int col){
+		if((col >= 3 && col <= 10) && (row >= 3 && row <= 9) && !(row == 3 && col == 3) && !(row == 9 && col == 3) && !(row == 4 && col == 3) && !(row == 8 && col == 3) && !(row == 3 && col == 4) && !(row == 9 && col == 4) && !(row == 4 && col == 9) && !(row == 6 && col == 10) && !(row == 4 && col == 10) && !(row == 3 && col == 9) && !(row == 3 && col == 10) && !(row == 8 && col == 10) && !(row == 8 && col == 9) && !(row == 9 && col == 10) && !(row == 9 && col == 9)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 }
