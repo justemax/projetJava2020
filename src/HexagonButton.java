@@ -2,8 +2,11 @@ import java.awt.*;
 
 import javax.swing.*;
 
-
-
+/**
+ * Classe redifinissant les boutons de façons a ce qu'ils est une forme d'hexagonne
+ * @author Max
+ *
+ */
 class HexagonButton extends JButton {
         private static final long serialVersionUID = 1L;
         private int row = 0;
@@ -14,7 +17,7 @@ class HexagonButton extends JButton {
         private double angle = 2*Math.PI/n;
         
         private boolean occupe = false;
-        private Pion pionPresent = null;
+        private Pion pionPresent;
         private String terrain = "Mer";
 
         
@@ -29,7 +32,7 @@ class HexagonButton extends JButton {
             this.col = col;
             this.setBackground(Color.blue);
             this.setText(String.valueOf(col)+ "." + String.valueOf(row));
-            this.setIcon(new ImageIcon("image/mer.png"));
+            this.setIcon(new ImageIcon("image/Mer.png"));
         }
 
         
@@ -110,5 +113,10 @@ class HexagonButton extends JButton {
         
 		public void setTerrain(String terrain) {
 			this.terrain = terrain;
+		}
+		
+		
+		public void majAff(){
+			
 		}
 }

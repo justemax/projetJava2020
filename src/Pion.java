@@ -10,6 +10,11 @@ public class Pion {
 	
 	
 	
+	@Override
+	public String toString() {
+		return "Pion [couleur=" + couleur + ", valeur=" + valeur + ", posX=" + posX + ", posY=" + posY + "]";
+	}
+
 	public Pion(String couleur, int valeur, int posX, int posY) {
 		super();
 		this.couleur = couleur;

@@ -5,7 +5,12 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
+/**
+ * Classe principal du jeu
+ * Il d'agit du pattern entier d'hexagonne mais également là  où se déroule la partie
+ * @author Max
+ *
+ */
 public class HexagonePattern extends JPanel implements ActionListener{
     private static final long serialVersionUID = 1L;
     private static final int ROWS = 13;
@@ -36,6 +41,9 @@ public class HexagonePattern extends JPanel implements ActionListener{
     }
 
 
+    /***
+     * Classe mettant en place le plateau de jeu, placement des boutons et des élements de base
+     */
     public void initGUI() {
         int offsetX = -5;
         int offsetY = 5;
@@ -67,15 +75,15 @@ public class HexagonePattern extends JPanel implements ActionListener{
                 	if (terCourant == "Foret"){
                 		hexButton[row][col].setBackground(Color.green);
                 		hexButton[row][col].setTerrain("Foret");
-                		hexButton[row][col].setIcon(new ImageIcon("image/foret.png"));
+                		hexButton[row][col].setIcon(new ImageIcon("image/Foret.png"));
                 	}else if(terCourant == "Plage"){
                 		hexButton[row][col].setBackground(Color.yellow);
                 		hexButton[row][col].setTerrain("Plage");
-                		hexButton[row][col].setIcon(new ImageIcon("image/plage.png"));
+                		hexButton[row][col].setIcon(new ImageIcon("image/Plage.png"));
                 	}else if(terCourant == "Montagne"){
                 		hexButton[row][col].setBackground(Color.gray);
                 		hexButton[row][col].setTerrain("Montagne");
-                		hexButton[row][col].setIcon(new ImageIcon("image/montagne.png"));
+                		hexButton[row][col].setIcon(new ImageIcon("image/Montagne.png"));
                 	}
                 	
                 	terRestant --;
@@ -87,6 +95,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
                 	
 					
 					hexButton[row][col].setIcon(new ImageIcon("image/serpent.png"));
+					hexButton[row][col].setOccupe(true);
 					
                 	System.out.println("Passe la");
                 }
@@ -114,12 +123,17 @@ public class HexagonePattern extends JPanel implements ActionListener{
     
 
 
-	@Override
+	/**
+	 * Classe interagissant avec le jouer lkà où il joue et le déroulement de la partie
+	 * 
+	 */
 	public void actionPerformed(ActionEvent arg0) {
 		
-		// V2 systeme de placement de pion
+		
 		
 		b1 = (HexagonButton) arg0.getSource();
+		
+		// V2 systeme de placement de pion
 		if(!fin){
 			if(placement > 0){
 				System.out.println("Placement des pions" + coulCour);
@@ -155,36 +169,46 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 		System.out.println("Partie en cour");
 		
-		/*
-		 Selection entre deux case adjacentes 
-		if(nbClic == 0){
-			b1 = (HexagonButton) arg0.getSource();
-			System.out.println("Col 1= " + b1.getCol());
-			System.out.println("Row 1 = " + b1.getRow());
-			b1.setBackground(Color.green);
-			nbClic ++;
-		}else if(nbClic == 1){
-			System.out.println("Clic num: " + nbClic);
-			b2 = (HexagonButton) arg0.getSource();
-			System.out.println("Col 2 = " + b2.getCol());
-			System.out.println("row 2 = " + b2.getRow());
-			
-			int rapRow = (b2.getRow() - b1.getRow()),rapCol = (b2.getCol() - b1.getCol());
-			
-			System.out.println("rapport row = " + (b2.getRow() - b1.getRow()));
-			System.out.println("rapport col = " + (b2.getCol() - b1.getCol()));
-			
-			if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 ))){
-				System.out.print("col +1 ok");
-				b2.setBackground(Color.red);
-			}else{
-				System.out.println("pas ok");
+		
+		// Deplacement pion v1 
+		if(fin){
+			System.out.println("B1 selectionner en attnte du 2");
+			if(nbClic == 0 && b1.getOccupe() == true){
+				b1 = (HexagonButton) arg0.getSource();
+				System.out.println("Col 1= " + b1.getCol());
+				System.out.println("Row 1 = " + b1.getRow());
+				nbClic ++;
+			}else if(nbClic == 1 ){
+				System.out.println("Clic num: " + nbClic);
+				b2 = (HexagonButton) arg0.getSource();
+				System.out.println("Col 2 = " + b2.getCol());
+				System.out.println("row 2 = " + b2.getRow());
+				
+				//int rapRow = (b2.getRow() - b1.getRow()),rapCol = (b2.getCol() - b1.getCol());
+				
+				System.out.println("rapport row = " + (b2.getRow() - b1.getRow()));
+				System.out.println("rapport col = " + (b2.getCol() - b1.getCol()));
+				
+				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getOccupe() == false){
+					// Probléme pas d'accés au pion present dans le bouton 
+					System.out.print(b1.getPionPresent().toString());
+					b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
+					//Pion p = b1.getPionPresent();
+					//b2.setPionPresent(p);
+					//System.out.println("Pion set sur b2");
+					//System.out.println(b2.getPionPresent().toString());
+					//b2.setOccupe(true);
+					//b1.setPionPresent(null);
+					//b2.setIcon(new ImageIcon("image/pion" + b2.getPionPresent().getCouleur() + ".png"));
+				}else{
+					System.out.println("pas ok");
+				}
+				
+				b1.setBackground(Color.blue);
+				nbClic = 0;
 			}
-			
-			b1.setBackground(Color.blue);
-			nbClic = 0;
 		}
-		*/
+		
 		
 		
 	}
