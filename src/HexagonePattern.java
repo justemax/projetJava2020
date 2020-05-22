@@ -27,6 +27,13 @@ public class HexagonePattern extends JPanel implements ActionListener{
     private int placement = 5;
     private boolean fin = false;
     
+    //Phase de jeux p1 deplacement
+    private int nbDepla = 0; 
+    private boolean depla = false;
+    
+    //phase de retrait d'une tuile terrain
+    private boolean retrait = false;
+    
     private ArrayList<String> listCoul = new ArrayList<String>();
     
     
@@ -37,7 +44,10 @@ public class HexagonePattern extends JPanel implements ActionListener{
         setLayout(null); 
         remplissageArrayCoul();
         coulCour = listCoul.get(0);
+        
         initGUI();
+        JOptionPane.showMessageDialog(this,"Phase de placement de pion, les pions ont respectivement la valeur 3*1, 2*2, 2*3, 4, 5 et 6. Retenez les l'accés au placment vous ne pourrez plus y accéder");
+        JOptionPane.showMessageDialog(this,coulCour + " Commence a placer");
     }
 
 
@@ -96,7 +106,8 @@ public class HexagonePattern extends JPanel implements ActionListener{
 					
 					hexButton[row][col].setIcon(new ImageIcon("image/serpent.png"));
 					hexButton[row][col].setOccupe(true);
-					
+					Pion s = new Pion("Noir", 1, col, row);
+					hexButton[row][col].setPionPresent(s);
                 	System.out.println("Passe la");
                 }
                 
@@ -131,10 +142,11 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 		
 		
-		b1 = (HexagonButton) arg0.getSource();
+		
 		
 		// V2 systeme de placement de pion
 		if(!fin){
+			b1 = (HexagonButton) arg0.getSource();
 			if(placement > 0){
 				System.out.println("Placement des pions" + coulCour);
 				if( zoneMilieu(b1.getRow(), b1.getCol())){
@@ -146,6 +158,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 						b1.setIcon(new ImageIcon("image/pion" + coulCour + ".png"));
 						b1.setOccupe(true);
 						placement --;
+						System.out.println(b1.getPionPresent().toString());
 						System.out.println("reste " + placement);
 					}
 					
@@ -157,10 +170,12 @@ public class HexagonePattern extends JPanel implements ActionListener{
 				System.out.println("Tout est placé pour" + coulCour);
 				if(listCoul.indexOf(coulCour) < listCoul.size() - 1){
 					coulCour = listCoul.get(listCoul.indexOf(coulCour) + 1);
+					JOptionPane.showMessageDialog(this,"Tous les pion de " + listCoul.get(listCoul.indexOf(coulCour) - 1) + " sont placé au tour de " + coulCour + " de placer");
 					placement = 5;
 				}else{
 					System.out.println("Tout est placé la partie commence");
 					fin = true;
+					depla = true;
 				}
 					
 				
@@ -171,13 +186,23 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 		
 		// Deplacement pion v1 
-		if(fin){
+		/**
+		 * @author Max HOFFER
+		 * 
+		 * Boucle de déplacement de pion
+		 */
+		if(depla){
 			System.out.println("B1 selectionner en attnte du 2");
-			if(nbClic == 0 && b1.getOccupe() == true){
+			if(nbClic == 0 ){
 				b1 = (HexagonButton) arg0.getSource();
-				System.out.println("Col 1= " + b1.getCol());
-				System.out.println("Row 1 = " + b1.getRow());
-				nbClic ++;
+				if(b1.getOccupe() == true && !b1.getPionPresent().getCouleur().equals("Noir")){
+					
+					nbClic ++;
+					System.out.println("clic valu: " + nbClic);
+				}
+				else{
+					System.out.println("Personne sur la case selectionner");
+				}
 			}else if(nbClic == 1 ){
 				System.out.println("Clic num: " + nbClic);
 				b2 = (HexagonButton) arg0.getSource();
@@ -190,27 +215,62 @@ public class HexagonePattern extends JPanel implements ActionListener{
 				System.out.println("rapport col = " + (b2.getCol() - b1.getCol()));
 				
 				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getOccupe() == false){
-					// Probléme pas d'accés au pion present dans le bouton 
-					System.out.print(b1.getPionPresent().toString());
-					b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
-					//Pion p = b1.getPionPresent();
-					//b2.setPionPresent(p);
-					//System.out.println("Pion set sur b2");
-					//System.out.println(b2.getPionPresent().toString());
-					//b2.setOccupe(true);
-					//b1.setPionPresent(null);
-					//b2.setIcon(new ImageIcon("image/pion" + b2.getPionPresent().getCouleur() + ".png"));
+					if(b1.getPionPresent().isNageur()){
+						System.out.print(b1.getPionPresent().toString());
+						b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
+						Pion p = b1.getPionPresent();
+						b2.setPionPresent(p);
+						System.out.println("Pion set sur b2");
+						System.out.println(b2.getPionPresent().toString());
+						b2.setOccupe(true);
+						b1.setPionPresent(null);
+						b1.setOccupe(false);
+						b2.setIcon(new ImageIcon("image/pion" + b2.getPionPresent().getCouleur() + ".png"));
+						nbClic = 0;
+						nbDepla = 3;
+					}else{
+						deplace(b1,b2);
+						nbClic = 0;
+						nbDepla ++;
+					}
+					
+					
+					if(nbDepla == 3){
+						nbDepla = 0;
+						depla = false;
+						retrait = true;
+					}
 				}else{
 					System.out.println("pas ok");
 				}
 				
-				b1.setBackground(Color.blue);
+				System.out.println("On remet nbCLic a 0");
 				nbClic = 0;
 			}
 		}
 		
+		/**
+		 * @author Max HOFFER
+		 * 
+		 * Moment de retrait d'une tuile
+		 */
 		
-		
+		if(retrait){
+			b1 = (HexagonButton) arg0.getSource();
+			if(!b1.getTerrain().equals("Mer")){
+				System.out.println("Ok retrai");
+				b1.setTerrain("Mer");
+				if(b1.getOccupe()){
+					b1.getPionPresent().setNageur(true);
+				}
+				
+				b1.majAff();
+				retrait = false;
+				depla = true;
+			}else{
+				System.out.println("On ne retire pas la mer!");
+			}
+		}
 	}
 	
 	
@@ -219,6 +279,20 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		listCoul.add("Jaune");
 		listCoul.add("Vert");
 		listCoul.add("Rouge");
+		
+	}
+	
+	private void deplace(HexagonButton b1, HexagonButton b2){
+		System.out.print(b1.getPionPresent().toString());
+		b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
+		Pion p = b1.getPionPresent();
+		b2.setPionPresent(p);
+		System.out.println("Pion set sur b2");
+		System.out.println(b2.getPionPresent().toString());
+		b2.setOccupe(true);
+		b1.setPionPresent(null);
+		b1.setOccupe(false);
+		b2.setIcon(new ImageIcon("image/pion" + b2.getPionPresent().getCouleur() + ".png"));
 		
 	}
 	

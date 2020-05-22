@@ -3,17 +3,14 @@ public class Pion {
 
 	private String couleur;
 	private int valeur, posX, posY;
-	
+	private boolean nageur = false;
 
 	
 	
 	
 	
 	
-	@Override
-	public String toString() {
-		return "Pion [couleur=" + couleur + ", valeur=" + valeur + ", posX=" + posX + ", posY=" + posY + "]";
-	}
+
 
 	public Pion(String couleur, int valeur, int posX, int posY) {
 		super();
@@ -39,7 +36,18 @@ public class Pion {
 		this.couleur = joueur;
 	}
 
-	
+	public boolean isNageur() {
+		return nageur;
+	}
+
+	public void setNageur(boolean nageur) {
+		this.nageur = nageur;
+	}
+
+	@Override
+	public String toString() {
+		return "Pion [couleur=" + couleur + ", valeur=" + valeur + ", posX=" + posX + ", posY=" + posY + "]";
+	}
 	
 	
 	

@@ -118,5 +118,26 @@ class HexagonButton extends JButton {
 		
 		public void majAff(){
 			
+			if(occupe){
+				if(pionPresent.getCouleur().equals("Noir")){
+					this.setIcon(new ImageIcon("image/serpent.png"));
+				}else{
+					this.setIcon(new ImageIcon("image/pion" + pionPresent.getCouleur() + ".png"));
+				}
+				
+			}else{
+				this.setIcon(new ImageIcon("image/" + terrain + ".png"));
+			}
+			
+			
+			if (terrain == "Foret"){
+        		this.setBackground(Color.green);
+        	}else if(terrain == "Plage"){
+        		this.setBackground(Color.yellow);
+        	}else if(terrain == "Montagne"){
+        		this.setBackground(Color.gray);
+        	}else{
+        		this.setBackground(Color.blue);
+        	}
 		}
 }
