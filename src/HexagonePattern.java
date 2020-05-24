@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -29,7 +30,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
     
     //Phase de placement pions
     private int placement = 5;
-    private boolean fin = false;
+    private boolean placementPion = false;
     private int nbPlage = 0,nbForet = 0, nbMontagne = 0;
     
     //Phase de jeux p1 deplacement
@@ -38,6 +39,18 @@ public class HexagonePattern extends JPanel implements ActionListener{
     
     //phase de retrait d'une tuile terrain
     private boolean retrait = false;
+    
+    //Tuile de chaque joueurs
+    private HashMap<String,ArrayList<FaceCachee>> tuileFCJoueur = new HashMap<String,ArrayList<FaceCachee>>();
+    private ArrayList<FaceCachee> listeFCRouge = new ArrayList<FaceCachee>();
+    private ArrayList<FaceCachee> listeFCBleu = new ArrayList<FaceCachee>();
+    private ArrayList<FaceCachee> listeFCVert = new ArrayList<FaceCachee>();
+    private ArrayList<FaceCachee> listeFCJaune = new ArrayList<FaceCachee>();
+    
+    //Face Caché jouet immediatement
+    private boolean immediat = false;
+    private FaceCachee fCCoura = null;
+    
     
     private ArrayList<String> listCoul = new ArrayList<String>();
     
@@ -49,6 +62,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
         setLayout(null); 
         remplissageArrayCoul();
         coulCour = listCoul.get(0);
+        initHashMap();
         initFaceCache();
         initGUI();
         JOptionPane.showMessageDialog(this,"Phase de placement de pion, les pions ont respectivement la valeur 3*1, 2*2, 2*3, 4, 5 et 6. Retenez les l'accés au placment vous ne pourrez plus y accéder");
@@ -156,7 +170,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 		
 		// V2 systeme de placement de pion
-		if(!fin){
+		if(!placementPion){
 			b1 = (HexagonButton) arg0.getSource();
 			if(placement > 0){
 				System.out.println("Placement des pions" + coulCour);
@@ -185,7 +199,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 					placement = 5;
 				}else{
 					System.out.println("Tout est placé la partie commence");
-					fin = true;
+					placementPion = true;
 					depla = true;
 				}
 					
@@ -195,7 +209,43 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 		System.out.println("Partie en cour");
 		
+		/**
+		 * @author Max HOFFER
+		 * Gestion de la face caché à action immediate
+		 */
 		
+		if(immediat){
+			b1 = (HexagonButton) arg0.getSource();
+			if(fCCoura.getNom().equals("Requin")){
+				if(b1.getTerrain().equals("Mer")){
+					Pion p = new Pion("Requin",0,b1.getCol(),b1.getRow());
+					b1.setOccupe(true);
+					b1.setPionPresent(p);
+					b1.setIcon(new ImageIcon("image/Requin.png"));
+				}
+			}
+			if(fCCoura.getNom().equals("Baleine")){
+				if(b1.getTerrain().equals("Mer")){
+					Pion p = new Pion("Baleine",0,b1.getCol(),b1.getRow());
+					b1.setOccupe(true);
+					b1.setPionPresent(p);
+					b1.setIcon(new ImageIcon("image/Baleine.png"));
+				}
+			}
+			immediat = false;
+			fCCoura = null;
+		}
+		
+		//Verif si une face caché est jouable pour le joueur courant
+		/*
+		if(!tuileFCJoueur.get(coulCour).isEmpty()){
+			String dial = "";
+			for(int i = 0;i<tuileFCJoueur.get(coulCour).size();i++){
+				dial += tuileFCJoueur.get(coulCour).get(i).toString() + "\n";
+			}
+			JOptionPane.showMessageDialog(this,"Vous pouvez jouer:\n" + dial);
+		}
+		*/
 		// Deplacement pion v1 
 		/**
 		 * @author Max HOFFER
@@ -220,16 +270,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 				
 				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getOccupe() == false){
 					if(b1.getPionPresent().isNageur()){
-						System.out.print(b1.getPionPresent().toString());
-						b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
-						Pion p = b1.getPionPresent();
-						b2.setPionPresent(p);
-						System.out.println("Pion set sur b2");
-						System.out.println(b2.getPionPresent().toString());
-						b2.setOccupe(true);
-						b1.setPionPresent(null);
-						b1.setOccupe(false);
-						b2.setIcon(new ImageIcon("image/pion" + b2.getPionPresent().getCouleur() + ".png"));
+						deplace(b1,b2);
 						nbClic = 0;
 						nbDepla = 3;
 					}else{
@@ -320,11 +361,27 @@ public class HexagonePattern extends JPanel implements ActionListener{
 			b1.getPionPresent().setNageur(true);
 		}
 		System.out.println(b1.getFaceCachee().toString());
+		if(b1.getFaceCachee().getMomentJeu().equals("AuChoix")){
+			tuileFCJoueur.get(coulCour).add(b1.getFaceCachee());
+		}
+		
+		if(b1.getFaceCachee().getMomentJeu().equals("Immediat")){
+			JOptionPane.showMessageDialog(this,"Vous avez optenu:\n" + b1.getFaceCachee().toString()+"\n Vous aller la jouer au prochain clic");
+			fCCoura = b1.getFaceCachee();
+			immediat = true;
+		}
+		
 		b1.majAff();
 		retrait = false;
 		depla = true;
 	}
 	
+	public void initHashMap(){
+		tuileFCJoueur.put("Rouge", listeFCRouge);
+		tuileFCJoueur.put("Bleu", listeFCBleu);
+		tuileFCJoueur.put("Jaune", listeFCJaune);
+		tuileFCJoueur.put("Vert", listeFCVert);
+	}
 	
 	public boolean zoneMilieu(int row, int col){
 
