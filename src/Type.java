@@ -1,5 +1,0 @@
-
-abstract public class  Type {
-
-	
-}

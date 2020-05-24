@@ -19,6 +19,7 @@ class HexagonButton extends JButton {
         private boolean occupe = false;
         private Pion pionPresent;
         private String terrain = "Mer";
+        private FaceCachee faceCachee = null; 
 
         
 
@@ -103,7 +104,17 @@ class HexagonButton extends JButton {
 		}
 
 
-        public void setOccupe(boolean b){
+        public FaceCachee getFaceCachee() {
+			return faceCachee;
+		}
+
+
+		public void setFaceCachee(FaceCachee faceCachee) {
+			this.faceCachee = faceCachee;
+		}
+
+
+		public void setOccupe(boolean b){
         	this.occupe = b;
         }
         

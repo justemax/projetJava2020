@@ -20,12 +20,17 @@ public class HexagonePattern extends JPanel implements ActionListener{
     private int nbClic = 0;
     private HexagonButton b1,b2;
     
+    //Initialisation du terrain
     private ListeTerrain ter = new ListeTerrain();
     private int terRestant = 39;
+    private ArrayList<FaceCachee> listeFCPlage = new ArrayList<FaceCachee>();
+    private ArrayList<FaceCachee> listeFCForet = new ArrayList<FaceCachee>();
+    private ArrayList<FaceCachee> listeFCMontagne = new ArrayList<FaceCachee>();
     
     //Phase de placement pions
     private int placement = 5;
     private boolean fin = false;
+    private int nbPlage = 0,nbForet = 0, nbMontagne = 0;
     
     //Phase de jeux p1 deplacement
     private int nbDepla = 0; 
@@ -44,7 +49,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
         setLayout(null); 
         remplissageArrayCoul();
         coulCour = listCoul.get(0);
-        
+        initFaceCache();
         initGUI();
         JOptionPane.showMessageDialog(this,"Phase de placement de pion, les pions ont respectivement la valeur 3*1, 2*2, 2*3, 4, 5 et 6. Retenez les l'accés au placment vous ne pourrez plus y accéder");
         JOptionPane.showMessageDialog(this,coulCour + " Commence a placer");
@@ -72,7 +77,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
                 
                 // Là où le placement des élement se fait aléatoirement
                 if(zoneMilieu(row, col)){
-                	int alea = 0 + (int)(Math.random() * ((terRestant - 0) + 1));
+                	int alea = random(0,terRestant);
                 	String terCourant = ter.getTerrain(alea);
                 	System.out.println(" " + alea);
                 	System.out.print(terCourant);
@@ -83,14 +88,20 @@ public class HexagonePattern extends JPanel implements ActionListener{
                 	System.out.println("Il reste: " + terRestant + "terrains");
                 	
                 	if (terCourant == "Foret"){
+                		nbForet ++;
+                		hexButton[row][col].setFaceCachee(listeFCForet.get(random(0, listeFCForet.size()-1)));
                 		hexButton[row][col].setBackground(Color.green);
                 		hexButton[row][col].setTerrain("Foret");
                 		hexButton[row][col].setIcon(new ImageIcon("image/Foret.png"));
                 	}else if(terCourant == "Plage"){
+                		nbPlage ++;
+                		hexButton[row][col].setFaceCachee(listeFCPlage.get(random(0, listeFCPlage.size()-1)));
                 		hexButton[row][col].setBackground(Color.yellow);
                 		hexButton[row][col].setTerrain("Plage");
                 		hexButton[row][col].setIcon(new ImageIcon("image/Plage.png"));
                 	}else if(terCourant == "Montagne"){
+                		nbMontagne ++;
+                		hexButton[row][col].setFaceCachee(listeFCMontagne.get(random(0, listeFCMontagne.size()-1)));
                 		hexButton[row][col].setBackground(Color.gray);
                 		hexButton[row][col].setTerrain("Montagne");
                 		hexButton[row][col].setIcon(new ImageIcon("image/Montagne.png"));
@@ -195,7 +206,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 			System.out.println("B1 selectionner en attnte du 2");
 			if(nbClic == 0 ){
 				b1 = (HexagonButton) arg0.getSource();
-				if(b1.getOccupe() == true && !b1.getPionPresent().getCouleur().equals("Noir")){
+				if(b1.getOccupe() == true && !b1.getPionPresent().getCouleur().equals("Noir") && b1.getPionPresent().getCouleur().equals(coulCour)){
 					
 					nbClic ++;
 					System.out.println("clic valu: " + nbClic);
@@ -206,13 +217,6 @@ public class HexagonePattern extends JPanel implements ActionListener{
 			}else if(nbClic == 1 ){
 				System.out.println("Clic num: " + nbClic);
 				b2 = (HexagonButton) arg0.getSource();
-				System.out.println("Col 2 = " + b2.getCol());
-				System.out.println("row 2 = " + b2.getRow());
-				
-				//int rapRow = (b2.getRow() - b1.getRow()),rapCol = (b2.getCol() - b1.getCol());
-				
-				System.out.println("rapport row = " + (b2.getRow() - b1.getRow()));
-				System.out.println("rapport col = " + (b2.getCol() - b1.getCol()));
 				
 				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getOccupe() == false){
 					if(b1.getPionPresent().isNageur()){
@@ -239,6 +243,8 @@ public class HexagonePattern extends JPanel implements ActionListener{
 						nbDepla = 0;
 						depla = false;
 						retrait = true;
+						JOptionPane.showMessageDialog(this,"Choisissez une tuile a retirer");
+						return;
 					}
 				}else{
 					System.out.println("pas ok");
@@ -258,15 +264,26 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		if(retrait){
 			b1 = (HexagonButton) arg0.getSource();
 			if(!b1.getTerrain().equals("Mer")){
-				System.out.println("Ok retrai");
-				b1.setTerrain("Mer");
-				if(b1.getOccupe()){
-					b1.getPionPresent().setNageur(true);
+
+				if(b1.getTerrain().equals("Montagne") && nbPlage == 0 && nbForet == 0){
+					retraitTerrain(b1);
+					nbMontagne --;
+				}else if(b1.getTerrain().equals("Montagne")){
+					JOptionPane.showMessageDialog(this,"Il reste des plage ou des foret");
 				}
 				
-				b1.majAff();
-				retrait = false;
-				depla = true;
+				if(b1.getTerrain().equals("Foret") && nbPlage == 0){
+					retraitTerrain(b1);
+					nbForet --;
+				}else if(b1.getTerrain().equals("Foret")){
+					JOptionPane.showMessageDialog(this,"Il reste des plage");
+				}
+				
+				if(b1.getTerrain().equals("Plage")){
+					retraitTerrain(b1);
+					nbPlage --;
+				}
+				
 			}else{
 				System.out.println("On ne retire pas la mer!");
 			}
@@ -296,11 +313,130 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 	}
 	
+	public void retraitTerrain(HexagonButton b){
+		System.out.println("Ok retrai");
+		b1.setTerrain("Mer");
+		if(b1.getOccupe()){
+			b1.getPionPresent().setNageur(true);
+		}
+		System.out.println(b1.getFaceCachee().toString());
+		b1.majAff();
+		retrait = false;
+		depla = true;
+	}
+	
+	
 	public boolean zoneMilieu(int row, int col){
+
 		if((col >= 3 && col <= 10) && (row >= 3 && row <= 9) && !(row == 3 && col == 3) && !(row == 9 && col == 3) && !(row == 4 && col == 3) && !(row == 8 && col == 3) && !(row == 3 && col == 4) && !(row == 9 && col == 4) && !(row == 4 && col == 9) && !(row == 6 && col == 10) && !(row == 4 && col == 10) && !(row == 3 && col == 9) && !(row == 3 && col == 10) && !(row == 8 && col == 10) && !(row == 8 && col == 9) && !(row == 9 && col == 10) && !(row == 9 && col == 9)){
 			return true;
 		}else{
 			return false;
 		}
 	}
+	
+	/**
+	 * @author Max HOFFER
+	 * Fonction de création des face cachée de chaque terrain
+	 */
+	public void initFaceCache(){
+		
+		// Jouable immediatement
+		FaceCachee f1 = new FaceCachee("Requin", "Immediat", "Prenez un pion requin mis de côté et placez sur la case de mer qu’occupait la tuile de terrain. Tout nageur occupant cette case de mer est retiré du jeu ");
+		FaceCachee f2 = new FaceCachee("Baleine", "Immediat", "Prenez un pion baleine mis de côté et placez-le sur la case de mer qu’occupait la tuile de terrain ");
+		FaceCachee f3 = new FaceCachee("Bateau","Immediat","Prenez un pion bateau mis de côté et placez-le sur la case de mer qu’occupait la tuile de terrain. Si cette case de mer contenait un ou plusieurs nageurs, placez-les à bord du bateau. Si la case de mer contenait plus de trois nageurs, c’est le joueur ayant révélé la tuile de terrain qui choisit lesquels montent à bord ");
+		FaceCachee f4 = new FaceCachee("Tourbillon", "Immediat","retirez du jeu tous les nageurs, serpents de mer, requins, baleines, bateaux et explorateurs de la case de mer qu’occupait la tuile de terrain et de toutes les cases mer adjacentes");
+		FaceCachee f5 = new FaceCachee("Volcant","Immediat","Fin du jeu");
+		
+		//Jouable Quand on veux
+		FaceCachee f6 = new FaceCachee("Dauphin","AuChoix","Un dauphin vient en aide à l’un de vos nageurs. Déplacez un de vos nageurs de 1 à 3 cases de mer.");
+		FaceCachee f7 = new FaceCachee("Vent","AuChoix","Les vents vous sont favorables. Déplacez un des bateaux que vous contrôlez de 1 à 3 cases de mer");
+		FaceCachee f8 = new FaceCachee("Serpent","AuChoix","Déplacez le serpent de mer de votre choix déjà présent sur le plateau de jeu sur n’importe quelle case de mer inoccupée ");
+		FaceCachee f9 = new FaceCachee("RequinV2","AuChoix","Déplacez le requin de votre choix déjà présent sur le plateau de jeu sur n’importe quelle case de mer inoccupée");
+		FaceCachee f10 = new FaceCachee("BaleineV2","AuChoix","Déplacez la baleine de votre choix déjà présente sur le plateau de jeu sur n’importe quelle case de mer inoccupée");
+		
+		
+		// Jouable en défence
+		FaceCachee f11 = new FaceCachee("Tue requin","Defence","Quand un autre joueur déplace un requin dans une case de mer occupée par l’un de vos nageurs, vous pouvez jouer cette tuile de terrain pour retirer le requin du jeu. Tous les nageurs demeurent dans la case mer. ");
+		FaceCachee f12 = new FaceCachee("Tue baleine","Defence","Quand un autre joueur déplace une baleine dans une case de mer occupée par un bateau que vous contrôlez, vous pouvez jouer cette tuile de terrain pour retirer la baleine du jeu. Votre bateau demeure dans la case de mer. ");
+		
+		// Remplissage des faces cachee
+		
+		//Plage
+		
+		//Baleine
+		listeFCPlage.add(f2);
+		listeFCPlage.add(f2);
+		listeFCPlage.add(f2);
+		//Requin
+		listeFCPlage.add(f1);
+		listeFCPlage.add(f1);
+		listeFCPlage.add(f1);
+		//Bateau
+		listeFCPlage.add(f3);
+		//Vent
+		listeFCPlage.add(f7);
+		listeFCPlage.add(f7);
+		//Dauphin
+		listeFCPlage.add(f6);
+		listeFCPlage.add(f6);
+		listeFCPlage.add(f6);
+		//Serpent
+		listeFCPlage.add(f8);
+		//RequinV2
+		listeFCPlage.add(f9);
+		//BalienV2
+		listeFCPlage.add(f10);
+		//Tue requin
+		listeFCPlage.add(f11);
+		
+		//Foret
+		
+		listeFCForet.add(f2);
+		listeFCForet.add(f2);
+		
+		listeFCForet.add(f1);
+		listeFCForet.add(f1);
+		
+		listeFCForet.add(f3);
+		listeFCForet.add(f2);
+		listeFCForet.add(f2);
+		
+		listeFCForet.add(f4);
+		listeFCForet.add(f4);
+		
+		listeFCForet.add(f6);
+		
+		listeFCForet.add(f8);
+		
+		listeFCForet.add(f9);
+		
+		listeFCForet.add(f10);
+		
+		listeFCForet.add(f11);
+		
+		listeFCForet.add(f12);
+		listeFCForet.add(f12);
+		
+		//Montagne
+		
+		listeFCMontagne.add(f1);
+		
+		listeFCMontagne.add(f4);
+		listeFCMontagne.add(f4);
+		listeFCMontagne.add(f4);
+		listeFCMontagne.add(f4);
+		
+		listeFCMontagne.add(f5);
+		
+		listeFCMontagne.add(f11);
+		
+		listeFCMontagne.add(f12);
+		
+	}
+	
+	public int random(int min,int max){
+		return min + (int)(Math.random() * ((max - min) + 1));
+	}
 }
+
