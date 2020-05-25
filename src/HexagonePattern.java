@@ -52,6 +52,20 @@ public class HexagonePattern extends JPanel implements ActionListener{
     private FaceCachee fCCoura = null;
     
     
+    //FaceCachee a jouer quand on veux
+    private HashMap<String, Boolean> quandOnveux = new HashMap<String,Boolean>();
+    
+    //Gestion des deplacement en fonction des FC
+    private boolean deplaMonstre = false;
+    private boolean deplaBat = false;
+    private boolean deplaNag = false;
+    
+    private int nbDeplaFC = 0;
+    private String typeFC = "";
+    
+    //Fin de partie
+    private boolean FinDePartie = false;
+    
     private ArrayList<String> listCoul = new ArrayList<String>();
     
     
@@ -129,9 +143,10 @@ public class HexagonePattern extends JPanel implements ActionListener{
                 if((row == 1) && (col == 2) || (row == 0) && (col == 11) || (row == 12) && (col == 11) || (row == 12) && (col == 2) || (row == 6) && (col == 6)){
                 	
 					
-					hexButton[row][col].setIcon(new ImageIcon("image/serpent.png"));
+					
 					hexButton[row][col].setOccupe(true);
-					Pion s = new Pion("Noir", 1, col, row);
+					Pion s = new Pion("Noir", 1, col, row,new ImageIcon("image/serpent.png"));
+					hexButton[row][col].setIcon(s.getImg());
 					hexButton[row][col].setPionPresent(s);
                 	System.out.println("Passe la");
                 }
@@ -160,12 +175,15 @@ public class HexagonePattern extends JPanel implements ActionListener{
 
 
 	/**
+	 * @author Max HOFFER
 	 * Classe interagissant avec le jouer lkà où il joue et le déroulement de la partie
 	 * 
 	 */
 	public void actionPerformed(ActionEvent arg0) {
 		
-		
+		if(FinDePartie){
+			
+		}
 		
 		
 		
@@ -178,9 +196,9 @@ public class HexagonePattern extends JPanel implements ActionListener{
 					if(b1.getOccupe()){
 						System.out.println("Deja un pion");
 					}else{
-						Pion p = new Pion(coulCour, 1, b1.getCol(), b1.getRow());
+						Pion p = new Pion(coulCour, 1, b1.getCol(), b1.getRow(),new ImageIcon("image/pion" + coulCour + ".png"));
 						b1.setPionPresent(p);
-						b1.setIcon(new ImageIcon("image/pion" + coulCour + ".png"));
+						b1.setIcon(p.getImg());
 						b1.setOccupe(true);
 						placement --;
 						System.out.println(b1.getPionPresent().toString());
@@ -199,6 +217,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 					placement = 5;
 				}else{
 					System.out.println("Tout est placé la partie commence");
+					changementJoueur();
 					placementPion = true;
 					depla = true;
 				}
@@ -218,35 +237,225 @@ public class HexagonePattern extends JPanel implements ActionListener{
 			b1 = (HexagonButton) arg0.getSource();
 			if(fCCoura.getNom().equals("Requin")){
 				if(b1.getTerrain().equals("Mer")){
-					Pion p = new Pion("Requin",0,b1.getCol(),b1.getRow());
+					Pion p = new Pion("Requin",0,b1.getCol(),b1.getRow(),new ImageIcon("image/Requin.png"));
 					b1.setOccupe(true);
 					b1.setPionPresent(p);
-					b1.setIcon(new ImageIcon("image/Requin.png"));
+					b1.setIcon(p.getImg());
+					immediat = false;
+					fCCoura = null;
+					changementJoueur();
+					return;
+				}
+				else{
+					JOptionPane.showMessageDialog(this,"Un requin se joue dans la mer");
+					return;
 				}
 			}
 			if(fCCoura.getNom().equals("Baleine")){
-				if(b1.getTerrain().equals("Mer")){
-					Pion p = new Pion("Baleine",0,b1.getCol(),b1.getRow());
+				if(b1.getTerrain().equals("Mer") && !b1.getOccupe()){
+					Pion p = new Pion("Baleine",0,b1.getCol(),b1.getRow(),new ImageIcon("image/Baleine.png"));
 					b1.setOccupe(true);
 					b1.setPionPresent(p);
-					b1.setIcon(new ImageIcon("image/Baleine.png"));
+					b1.setIcon(p.getImg());
+					immediat = false;
+					fCCoura = null;
+					changementJoueur();
+					return;
+				}
+				else{
+					JOptionPane.showMessageDialog(this,"CUne baleine se joue dans la mer et sur une case vide");
 				}
 			}
-			immediat = false;
-			fCCoura = null;
+			if(fCCoura.getNom().equals("Volcant")){
+				FinDePartie = true;
+				immediat = false;
+				fCCoura = null;
+				return;
+			}
+			
+			if(fCCoura.getNom().equals("Tourbillon")){
+				if(b1.getTerrain().equals("Mer") && b1.getOccupe()){
+					b1.setOccupe(false);
+					b1.setPionPresent(null);
+					b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
+					immediat = false;
+					fCCoura = null;
+					changementJoueur();
+					return;
+				}
+				else{
+					JOptionPane.showMessageDialog(this,"Un topurbillon se joue sur une case mer avec un pion présent");
+					return;
+				}
+			}
+			
+			if(fCCoura.getNom().equals("Bateau")){
+				if(b1.getTerrain().equals("Mer") && !b1.getOccupe()){
+					Bateau b = new Bateau("Boat",0,b1.getCol(),b1.getRow(),new ImageIcon("image/bateau.png"));
+					b1.setOccupe(true);
+					b1.setPionPresent(b);
+					b1.setIcon(b.getImg());
+					changementJoueur();
+					immediat = false;
+					fCCoura = null;
+					return;
+				}else{
+					JOptionPane.showMessageDialog(this,"Un bateau se joue dans la mer et sur une case vide");
+				}
+			}
+			
+			
 		}
 		
-		//Verif si une face caché est jouable pour le joueur courant
-		/*
-		if(!tuileFCJoueur.get(coulCour).isEmpty()){
-			String dial = "";
-			for(int i = 0;i<tuileFCJoueur.get(coulCour).size();i++){
-				dial += tuileFCJoueur.get(coulCour).get(i).toString() + "\n";
+		/**
+		 * @author Max HOFFER
+		 * 
+		 * Jouer une tuile dans son deck
+		 */
+		
+		if(!tuileFCJoueur.get(coulCour).isEmpty() && quandOnveux.get(coulCour)){
+			Object[] choix = new String[100];
+			choix[0] = "rien";
+			for(int i = 0;i < tuileFCJoueur.get(coulCour).size();i++){
+				choix[i+1] = tuileFCJoueur.get(coulCour).get(i).getNom();
 			}
-			JOptionPane.showMessageDialog(this,"Vous pouvez jouer:\n" + dial);
+			ImageIcon icon = new ImageIcon("image/baeine.png","truc");
+			String s = (String)JOptionPane.showInputDialog(
+                    this,
+                    "Choisisser quoi jouer, rien pour ne jouer",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    icon,
+                    choix,
+                    choix[0]);
+
+			System.out.println(s);
+			
+			if(s.equals("rien")){
+				depla = true;
+			}else if(s.equals("Vent")){
+				deplaBat = true;
+			}else if(s.equals("Dauphin")){
+				deplaNag = true;
+			}else{
+				deplaMonstre = true;
+				typeFC = s;
+			}
+			quandOnveux.put(coulCour, false);
+			
+			
 		}
-		*/
-		// Deplacement pion v1 
+		
+		
+		/**
+		 * @author Max HOFFER
+		 * 
+		 * Deplacement d'un monstre ou de negeur ou bateau
+		 */
+		
+		//Deplacement des serpend
+		
+		if(deplaMonstre &&  typeFC.equals("Serpent")){
+			System.out.println("B1 selectionner en attnte du 2");
+			if(nbClic == 0){
+				b1 = (HexagonButton) arg0.getSource();
+				if(b1.getOccupe() == true && b1.getPionPresent().getCouleur().equals("Noir")){
+					nbClic ++;
+				}
+				else{
+					System.out.println("Rien sur la case selectionner");
+				}
+			}else if(nbClic == 1 ){
+				b2 = (HexagonButton) arg0.getSource();
+				if(b2.getTerrain().equals("Mer") && b2.getOccupe() == false ){
+					deplace(b1, b2);
+					depla = true;
+					deplaMonstre = false;
+					return;
+				}
+				nbClic = 0;
+			}
+				
+		}
+		
+		//Deplacement des requins
+		
+		if(deplaMonstre &&  typeFC.equals("Requin")){
+			System.out.println("B1 selectionner en attnte du 2");
+			if(nbClic == 0){
+				b1 = (HexagonButton) arg0.getSource();
+				if(b1.getOccupe() == true && b1.getPionPresent().getCouleur().equals("Requin")){
+					nbClic ++;
+				}
+				else{
+					System.out.println("Rien sur la case selectionner");
+				}
+			}else if(nbClic == 1 ){
+				b2 = (HexagonButton) arg0.getSource();
+				if(b2.getTerrain().equals("Mer") && b2.getOccupe() == false ){
+					deplace(b1, b2);
+					depla = true;
+					deplaMonstre = false;
+					return;
+				}
+				nbClic = 0;
+			}
+				
+		}
+		
+		//Deplacement Ngeurs
+		
+		if(deplaNag){
+			System.out.println("B1 selectionner en attnte du 2");
+			if(nbClic == 0){
+				b1 = (HexagonButton) arg0.getSource();
+				if(b1.getOccupe() == true && b1.getPionPresent().getCouleur().equals(coulCour)){
+					nbClic ++;
+				}
+				else{
+					System.out.println("Rien sur la case selectionner");
+				}
+			}else if(nbClic == 1 ){
+				b2 = (HexagonButton) arg0.getSource();
+				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getTerrain().equals("Mer") && b2.getOccupe() == false ){
+					deplace(b1, b2);
+					nbDeplaFC ++;
+					if(nbDeplaFC >= 3){
+						depla = true;
+						deplaNag = false;
+						return;
+					}
+				}
+				nbClic = 0;
+			}	
+		}
+		
+		if(deplaBat){
+			System.out.println("B1 selectionner en attnte du 2");
+			if(nbClic == 0){
+				b1 = (HexagonButton) arg0.getSource();
+				if(b1.getOccupe() == true && b1.getPionPresent().getCouleur().equals("Bateau")){
+					nbClic ++;
+				}
+				else{
+					System.out.println("Rien sur la case selectionner");
+				}
+			}else if(nbClic == 1 ){
+				b2 = (HexagonButton) arg0.getSource();
+				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getTerrain().equals("Mer") && b2.getOccupe() == false ){
+					deplace(b1, b2);
+					nbDeplaFC ++;
+					if(nbDeplaFC >= 3){
+						depla = true;
+						deplaBat = false;
+						return;
+					}
+				}
+				nbClic = 0;
+			}
+				
+		}
+		
 		/**
 		 * @author Max HOFFER
 		 * 
@@ -268,19 +477,43 @@ public class HexagonePattern extends JPanel implements ActionListener{
 				System.out.println("Clic num: " + nbClic);
 				b2 = (HexagonButton) arg0.getSource();
 				
-				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getOccupe() == false){
+				if((((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 )) && b2.getOccupe() == false ){
 					if(b1.getPionPresent().isNageur()){
+						/*
+						Bateau b = (Bateau) b2.getPionPresent();
+						if(b.placeDispo()){
+							b.addPion(b1.getPionPresent());
+							b1.setPionPresent(null);
+							b1.setOccupe(false);
+							b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
+						}else{
+							deplace(b1,b2);
+							nbClic = 0;
+							nbDepla = 3;
+						} */
 						deplace(b1,b2);
 						nbClic = 0;
 						nbDepla = 3;
+						
 					}else{
+						/* Bateau b = (Bateau) b2.getPionPresent();
+						if(b.placeDispo()){
+							b.addPion(b1.getPionPresent());
+							b1.setPionPresent(null);
+							b1.setOccupe(false);
+							b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
+						}else{ 
+							deplace(b1,b2);
+							nbClic = 0;
+							nbDepla ++;
+						} */
 						deplace(b1,b2);
 						nbClic = 0;
 						nbDepla ++;
 					}
 					
 					
-					if(nbDepla == 3){
+					if(nbDepla >= 3){
 						nbDepla = 0;
 						depla = false;
 						retrait = true;
@@ -344,13 +577,19 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		System.out.print(b1.getPionPresent().toString());
 		b1.setIcon(new ImageIcon("image/" + b1.getTerrain() + ".png"));
 		Pion p = b1.getPionPresent();
+		if(b2.getTerrain().equals("Mer")){
+			p.setNageur(true);
+		}else{
+			p.setNageur(false);
+		}
+		
 		b2.setPionPresent(p);
 		System.out.println("Pion set sur b2");
 		System.out.println(b2.getPionPresent().toString());
 		b2.setOccupe(true);
 		b1.setPionPresent(null);
 		b1.setOccupe(false);
-		b2.setIcon(new ImageIcon("image/pion" + b2.getPionPresent().getCouleur() + ".png"));
+		b2.setIcon(b2.getPionPresent().getImg());
 		
 	}
 	
@@ -363,6 +602,8 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		System.out.println(b1.getFaceCachee().toString());
 		if(b1.getFaceCachee().getMomentJeu().equals("AuChoix")){
 			tuileFCJoueur.get(coulCour).add(b1.getFaceCachee());
+			changementJoueur();
+			
 		}
 		
 		if(b1.getFaceCachee().getMomentJeu().equals("Immediat")){
@@ -373,7 +614,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		
 		b1.majAff();
 		retrait = false;
-		depla = true;
+		
 	}
 	
 	public void initHashMap(){
@@ -381,6 +622,11 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		tuileFCJoueur.put("Bleu", listeFCBleu);
 		tuileFCJoueur.put("Jaune", listeFCJaune);
 		tuileFCJoueur.put("Vert", listeFCVert);
+		
+		quandOnveux.put("Rouge", true);
+		quandOnveux.put("Bleu", true);
+		quandOnveux.put("Jaune", true);
+		quandOnveux.put("Vert", true);
 	}
 	
 	public boolean zoneMilieu(int row, int col){
@@ -494,6 +740,21 @@ public class HexagonePattern extends JPanel implements ActionListener{
 	
 	public int random(int min,int max){
 		return min + (int)(Math.random() * ((max - min) + 1));
+	}
+	
+	public void changementJoueur(){
+		quandOnveux.put(coulCour, true);
+		if(listCoul.indexOf(coulCour) < listCoul.size()-1){
+			coulCour = listCoul.get(listCoul.indexOf(coulCour)+1);
+		}else{
+			coulCour = listCoul.get(0);
+		}
+		
+		if(tuileFCJoueur.get(coulCour).isEmpty()){
+			depla = true;
+		}
+		
+		JOptionPane.showMessageDialog(this,"Au tour de " + coulCour);
 	}
 }
 

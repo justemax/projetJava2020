@@ -13,7 +13,7 @@ public class Main {
 	public static void main(String[] args) {
         HexagonePattern hexPattern = new HexagonePattern();
         JFrame frame = new JFrame();
-        frame.setTitle("AOE eco+");
+        frame.setTitle("Civ6 eco+");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocation(new Point(700, 300));
         frame.add(hexPattern);

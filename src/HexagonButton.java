@@ -31,7 +31,7 @@ class HexagonButton extends JButton {
         	setContentAreaFilled(false);
             this.row = row;
             this.col = col;
-            this.setBackground(Color.blue);
+            this.setBackground(Color.blue.brighter());
             this.setText(String.valueOf(col)+ "." + String.valueOf(row));
             this.setIcon(new ImageIcon("image/Mer.png"));
         }
@@ -148,7 +148,7 @@ class HexagonButton extends JButton {
         	}else if(terrain == "Montagne"){
         		this.setBackground(Color.gray);
         	}else{
-        		this.setBackground(Color.blue);
+        		this.setBackground(Color.blue.brighter());
         	}
 		}
 }
