@@ -211,6 +211,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		
 		if(FinDePartie){
+			calcGagnant();
 			
 		}
 		
@@ -1024,5 +1025,25 @@ public class HexagonePattern extends JPanel implements ActionListener{
 		}
 		
 	}
+	
+	private void calcGagnant(){
+		int maxScore = 0;
+		String gagnant = "";
+		
+		for(int i =0; i<listCoul.size(); i++){
+			if(score.get(listCoul.get(i))>maxScore){
+				maxScore = score.get(listCoul.get(i));
+				gagnant = listCoul.get(i);
+			}
+		}
+		
+		if(maxScore > 0){
+			JOptionPane.showMessageDialog(this,"Le gagnant est " + gagnant + " avec un score de " + maxScore);
+		}else{
+			JOptionPane.showMessageDialog(this,"Personne ne gagne");
+		}
+		
+	}
+	
 }
 
