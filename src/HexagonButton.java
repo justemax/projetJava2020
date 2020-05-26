@@ -17,7 +17,9 @@ class HexagonButton extends JButton {
         private double angle = 2*Math.PI/n;
         
         private boolean occupe = false;
+        private boolean boat = false;
         private Pion pionPresent;
+        private Bateau bateauPresent;
         private String terrain = "Mer";
         private FaceCachee faceCachee = null; 
 
@@ -127,6 +129,27 @@ class HexagonButton extends JButton {
 		}
 		
 		
+		
+		public boolean isBoat() {
+			return boat;
+		}
+
+
+		public void setBoat(boolean boat) {
+			this.boat = boat;
+		}
+
+
+		public Bateau getBateauPresent() {
+			return bateauPresent;
+		}
+
+
+		public void setBateauPresent(Bateau bateauPresent) {
+			this.bateauPresent = bateauPresent;
+		}
+
+
 		public void majAff(){
 			
 			if(occupe){
