@@ -614,6 +614,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 						if(!defence.get(b2.getPionPresent().getCouleur()).isEmpty()){
 							int j = defence.get(b2.getPionPresent()).indexOf("TueRequin");
 							if(j > 0){
+								defence.get(b2.getPionPresent()).remove(j);
 								b1.setPionPresent(null);
 								b1.setOccupe(false);
 								nbRequin --;
@@ -655,8 +656,38 @@ public class HexagonePattern extends JPanel implements ActionListener{
 				b2 = (HexagonButton) arg0.getSource();
 				if(b2.getTerrain().equals("Mer") && (((b2.getCol() - b1.getCol()) == 1 ) || ((b2.getCol() - b1.getCol()) == -1 ) || ((b2.getCol() - b1.getCol()) == 0 )) && (((b2.getRow() - b1.getRow()) == 1 ) || ((b2.getRow() - b1.getRow()) == -1 ) || ((b2.getRow() - b1.getRow()) == 0 ))){
 					if(b2.getOccupe()){
-						if(b2.getPionPresent().equals("Bateau")){
-							//Faire le truc du bateau
+						if(b2.isBoat()){
+							if(verifCarteBat(b2.getBateauPresent())){
+								//Supp baleine
+								b1.setPionPresent(null);
+								b1.setOccupe(false);
+								nbBaleine --;
+								deBaleine = false;
+								deDepla = 0;
+								nbClic = 0;
+								b1.majAff();
+								return;
+							}else{
+								// repartition des joueur
+								if(b2.getBateauPresent().nbPion()>0){
+									Pion pion[] = pionDansBateau(b2.getBateauPresent());
+									for(int i =0; i< b2.getBateauPresent().nbPion(); i++){
+										if(i == 0){
+											hexButton[b2.getRow()+1][b2.getCol()].setPionPresent(pion[i]);
+										}else if(i == 1){
+											hexButton[b2.getRow()][b2.getCol()+1].setPionPresent(pion[i]);
+										}else if(i == 3){
+											hexButton[b2.getRow()+1][b2.getCol()+1].setPionPresent(pion[i]);
+										}
+										
+										
+									}
+								}
+								deplace(b1, b2);
+								
+							}
+							
+							
 						}
 					}
 					deplace(b1, b2);
@@ -664,6 +695,7 @@ public class HexagonePattern extends JPanel implements ActionListener{
 					if(deDepla >= 3){
 						deBaleine = false;
 						deDepla = 0;
+						nbClic = 0;
 						changementJoueur();
 						return;
 					}
@@ -1043,6 +1075,32 @@ public class HexagonePattern extends JPanel implements ActionListener{
 			JOptionPane.showMessageDialog(this,"Personne ne gagne");
 		}
 		
+	}
+	
+	private boolean verifCarteBat(Bateau b){
+		for(int i =0; i< listCoul.size(); i++){
+			if(b.getNbPionCoul(listCoul.get(i))>0){
+				if(defence.get(listCoul.get(i)).indexOf("TueBaleine") > 0){
+					defence.get(listCoul.get(i)).remove(defence.get(listCoul.get(i)).indexOf("TueBaleine"));
+					return true;
+				}
+			}
+			
+		}
+		return false;	
+		
+	}
+	
+	private Pion[] pionDansBateau(Bateau b){
+		Pion pion[] = new Pion[3];
+		int nbPion = 0;
+		for(int i =0; i< listCoul.size(); i++){
+			if(b.getNbPionCoul(listCoul.get(i))>0){
+				pion[nbPion] = b.getPionCoul(i, listCoul.get(i));
+			}
+			
+		}
+		return pion;
 	}
 	
 }

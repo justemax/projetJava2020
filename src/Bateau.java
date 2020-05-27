@@ -7,15 +7,18 @@ public class Bateau extends Pion {
 
 	
 	private HashMap<String,ArrayList> pionInterne = new HashMap<String,ArrayList>();
-	private ArrayList<Pion> pionMemeCoul = new ArrayList<Pion>();
+	private ArrayList<Pion> pionMemeR = new ArrayList<Pion>();
+	private ArrayList<Pion> pionMemeV = new ArrayList<Pion>();
+	private ArrayList<Pion> pionMemeB = new ArrayList<Pion>();
+	private ArrayList<Pion> pionMemeJ = new ArrayList<Pion>();
 	private int placeDispo = 3;
 	
 	public Bateau(String couleur, int valeur, int posX, int posY, ImageIcon img) {
 		super(couleur, valeur, posX, posY, img);
-		pionInterne.put("Rouge", pionMemeCoul);
-		pionInterne.put("Jaune", pionMemeCoul);
-		pionInterne.put("Vert", pionMemeCoul);
-		pionInterne.put("Bleu", pionMemeCoul);
+		pionInterne.put("Rouge", pionMemeR);
+		pionInterne.put("Jaune", pionMemeJ);
+		pionInterne.put("Vert", pionMemeV);
+		pionInterne.put("Bleu", pionMemeB);
 		
 	}
 	
@@ -37,9 +40,11 @@ public class Bateau extends Pion {
 	public int getNbPionCoul(String coul){
 		return pionInterne.get(coul).size();
 	}
+	
 	public int nbPion(){
 		return 3-nbPion();
 	}
+	
 	
 	
 	
